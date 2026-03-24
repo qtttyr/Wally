@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d9488"/>
+      <stop offset="100%" style="stop-color:#14b8a6"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff"/>
+      <stop offset="100%" style="stop-color:#ccfbf1"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <rect width="512" height="512" rx="100" fill="url(#bg)"/>
+  
+  <!-- Wallet body -->
+  <rect x="120" y="160" width="272" height="192" rx="24" fill="url(#accent)" opacity="0.95"/>
+  
+  <!-- Wallet flap -->
+  <path d="M120 184 C120 170.7 130.7 160 144 160 L368 160 C381.3 160 392 170.7 392 184 L392 220 L120 220 Z" fill="white" opacity="0.8"/>
+  
+  <!-- Card slot -->
+  <rect x="152" y="240" width="160" height="24" rx="6" fill="#0d9488" opacity="0.4"/>
+  
+  <!-- Dollar/W sign -->
+  <text x="256" y="320" font-family="system-ui, sans-serif" font-size="72" font-weight="bold" fill="#0d9488" text-anchor="middle" dominant-baseline="middle">W</text>
+  
+  <!-- Sparkle top-right -->
+  <circle cx="400" cy="120" r="8" fill="white" opacity="0.7"/>
+  <circle cx="420" cy="140" r="5" fill="white" opacity="0.5"/>
+  
+  <!-- Sparkle bottom-left -->
+  <circle cx="100" cy="380" r="6" fill="white" opacity="0.6"/>
+  <circle cx="85" cy="400" r="4" fill="white" opacity="0.4"/>
+</svg>

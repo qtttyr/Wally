@@ -1,0 +1,66 @@
+{
+  "name": "Wally — AI Финансовый Помощник",
+  "short_name": "Wally",
+  "description": "Сканируй чеки, контролируй бюджет, получай AI-инсайты о своих тратах",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0d9488",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "ru",
+  "categories": ["finance", "utilities"],
+  "icons": [
+    {
+      "src": "/wally-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Сканировать чек",
+      "short_name": "Скан",
+      "url": "/scan",
+      "icons": [
+        {
+          "src": "/wally-logo.svg",
+          "sizes": "any"
+        }
+      ]
+    },
+    {
+      "name": "Мои расходы",
+      "short_name": "Расходы",
+      "url": "/expenses",
+      "icons": [
+        {
+          "src": "/wally-logo.svg",
+          "sizes": "any"
+        }
+      ]
+    }
+  ],
+  "screenshots": [],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
