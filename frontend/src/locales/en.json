@@ -144,8 +144,8 @@
     "limitAmount": "Limit",
     "addLimit": "Add limit",
     "used": "used",
-    "remainingAmount": "Remaining {amount}",
-    "overBudgetAmount": "Over by {amount}",
+    "remainingAmount": "Remaining {{amount}}",
+    "overBudgetAmount": "Over by {{amount}}",
     "statusOver": "Over budget",
     "statusNearLimit": "Near limit",
     "statusNormal": "Normal"

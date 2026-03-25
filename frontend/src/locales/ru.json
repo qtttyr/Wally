@@ -144,8 +144,8 @@
     "limitAmount": "Лимит",
     "addLimit": "Добавить лимит",
     "used": "использовано",
-    "remainingAmount": "Осталось {amount}",
-    "overBudgetAmount": "Превышен на {amount}",
+    "remainingAmount": "Осталось {{amount}}",
+    "overBudgetAmount": "Превышен на {{amount}}",
     "statusOver": "Превышен",
     "statusNearLimit": "Почти лимит",
     "statusNormal": "В норме"
