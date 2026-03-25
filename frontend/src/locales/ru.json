@@ -142,7 +142,20 @@
     "total": "Итого",
     "save": "Сохранить",
     "flashOn": "Вспышка вкл",
-    "flashOff": "Вспышка выкл"
+    "flashOff": "Вспышка выкл",
+    "myReceipts": "Мои чеки"
+  },
+  "receipts": {
+    "title": "Мои чеки",
+    "noReceipts": "Пока нет чеков",
+    "noReceiptsDesc": "Отсканируй первый чек, чтобы увидеть его здесь",
+    "search": "Поиск чеков...",
+    "receiptDetails": "Детали чека",
+    "store": "Магазин",
+    "amount": "Сумма",
+    "category": "Категория",
+    "date": "Дата",
+    "scanned": "Отсканировано"
   },
   "budget": {
     "title": "Бюджет",

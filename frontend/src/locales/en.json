@@ -142,7 +142,20 @@
     "save": "Save Expense",
     "flashOn": "Flash On",
     "flashOff": "Flash Off",
-    "scanAgain": "Scan again"
+    "scanAgain": "Scan again",
+    "myReceipts": "My Receipts"
+  },
+  "receipts": {
+    "title": "My Receipts",
+    "noReceipts": "No receipts yet",
+    "noReceiptsDesc": "Scan your first receipt to see it here",
+    "search": "Search receipts...",
+    "receiptDetails": "Receipt Details",
+    "store": "Store",
+    "amount": "Amount",
+    "category": "Category",
+    "date": "Date",
+    "scanned": "Scanned"
   },
   "budget": {
     "title": "Budget",

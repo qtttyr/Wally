@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { API_ENDPOINTS } from '../lib/api';
 
 interface AiInsight {
   id: string;
@@ -19,7 +20,7 @@ export const useAiInsights = () => {
         if (!session) return;
 
         // Call our FastAPI backend using the auth session token
-        const response = await fetch('http://localhost:8000/api/v1/ai/insights', {
+        const response = await fetch(API_ENDPOINTS.AI_INSIGHTS, {
           headers: {
             'Authorization': `Bearer ${session.access_token}`
           }

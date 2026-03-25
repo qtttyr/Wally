@@ -8,6 +8,7 @@ import LoginPage from './pages/Auth/LoginPage';
 import RegisterPage from './pages/Auth/RegisterPage';
 import DashboardPage from './pages/Dashboard/DashboardPage';
 import ScanPage from './pages/Scan/ScanPage';
+import ReceiptsPage from './pages/Receipts/ReceiptsPage';
 import ExpensesPage from './pages/Expenses/ExpensesPage';
 import BudgetPage from './pages/Budget/BudgetPage';
 import SubsPage from './pages/Subscriptions/SubsPage';
@@ -28,6 +29,7 @@ function App() {
             <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
             <Route path={ROUTES.EXPENSES} element={<ExpensesPage />} />
             <Route path={ROUTES.SCAN} element={<ScanPage />} />
+            <Route path={ROUTES.RECEIPTS} element={<ReceiptsPage />} />
             <Route path={ROUTES.BUDGET} element={<BudgetPage />} />
             <Route path={ROUTES.SUBSCRIPTIONS} element={<SubsPage />} />
             <Route path={ROUTES.ANALYTICS} element={<AnalyticsPage />} />

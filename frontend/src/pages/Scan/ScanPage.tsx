@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   CameraIcon, UploadIcon, SparklesIcon, CheckCircleIcon, 
-  AlertCircleIcon, RotateCcwIcon, EditIcon
+  AlertCircleIcon, RotateCcwIcon, EditIcon, ReceiptIcon
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/ui/button';
@@ -13,6 +13,7 @@ import { useExpensesStore } from '../../store/expensesStore';
 import { ROUTES } from '../../constants/routes';
 import { CATEGORIES } from '../../constants/categories';
 import { preprocessImage, getConfidenceLevel, getConfidenceColor } from '../../lib/imageProcessing';
+import { API_ENDPOINTS } from '../../lib/api';
 
 interface ScanItem {
   name: string;
@@ -41,6 +42,7 @@ export default function ScanPage() {
   const [step, setStep] = useState<ScanStep>('capture');
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [processedFile, setProcessedFile] = useState<File | null>(null);
+  const [processedBlob, setProcessedBlob] = useState<Blob | null>(null);
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   
   const [editMode, setEditMode] = useState(false);
@@ -80,13 +82,14 @@ export default function ScanPage() {
         return;
       }
 
-      const processedBlob = await preprocessImage(processedFile);
-      const processedFileObj = new File([processedBlob], 'receipt.jpg', { type: 'image/jpeg' });
+      const blob = await preprocessImage(processedFile);
+      setProcessedBlob(blob);
+      const processedFileObj = new File([blob], 'receipt.jpg', { type: 'image/jpeg' });
 
       const formData = new FormData();
       formData.append('file', processedFileObj);
 
-      const response = await fetch('http://localhost:8000/api/v1/scan/process', {
+      const response = await fetch(API_ENDPOINTS.SCAN_PROCESS, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${session.access_token}`
@@ -141,13 +144,33 @@ export default function ScanPage() {
         return;
       }
 
+      let receiptUrl = null;
+
+      if (processedBlob) {
+        const fileName = `receipts/${session.user.id}/${Date.now()}.jpg`;
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('receipts')
+          .upload(fileName, processedBlob, {
+            contentType: 'image/jpeg',
+            upsert: false
+          });
+
+        if (!uploadError && uploadData) {
+          const { data: { publicUrl } } = supabase.storage
+            .from('receipts')
+            .getPublicUrl(fileName);
+          receiptUrl = publicUrl;
+        }
+      }
+
       const insertData = {
         user_id: session.user.id,
         amount: editedResult.amount,
         category_id: editedResult.category_id || 'other',
         date: editedResult.date || new Date().toISOString().split('T')[0],
         description: editedResult.description || t('scan.scanReceipt'),
-        ai_categorized: true
+        ai_categorized: true,
+        receipt_url: receiptUrl
       };
 
       const { error } = await supabase
@@ -161,6 +184,7 @@ export default function ScanPage() {
       }
 
       await fetchExpenses();
+      setProcessedBlob(null);
       setStep('success');
       
     } catch (err: unknown) {
@@ -222,6 +246,16 @@ export default function ScanPage() {
         >
           <UploadIcon className="mr-2" size={24} />
           {t('scan.chooseFromGallery')}
+        </Button>
+
+        <Button 
+          variant="ghost" 
+          size="lg" 
+          className="w-full h-12 rounded-2xl text-muted-foreground"
+          onClick={() => navigate(ROUTES.RECEIPTS)}
+        >
+          <ReceiptIcon className="mr-2" size={20} />
+          {t('scan.myReceipts')}
         </Button>
       </div>
     </div>
