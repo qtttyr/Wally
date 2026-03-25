@@ -20,32 +20,32 @@ type Period = "week" | "month" | "year";
 
 // Mock data for analytics
 const MOCK_CATEGORY_DATA = [
-  { id: "Food", amount: 54000 },
-  { id: "Transport", amount: 28500 },
-  { id: "Entertainment", amount: 12000 },
-  { id: "Shopping", amount: 41200 },
-  { id: "Health", amount: 5200 },
-  { id: "Housing", amount: 65000 },
-  { id: "Subscriptions", amount: 8900 },
+  { id: "food", amount: 54000 },
+  { id: "transport", amount: 28500 },
+  { id: "entertainment", amount: 12000 },
+  { id: "shopping", amount: 41200 },
+  { id: "health", amount: 5200 },
+  { id: "housing", amount: 65000 },
+  { id: "subscriptions", amount: 8900 },
 ];
 
 const MOCK_WEEKLY_DATA = [
-  { name: "Пн", amount: 12500 },
-  { name: "Вт", amount: 8300 },
-  { name: "Ср", amount: 15700 },
-  { name: "Чт", amount: 6400 },
-  { name: "Пт", amount: 22100 },
-  { name: "Сб", amount: 18900 },
-  { name: "Вс", amount: 9600 },
+  { name: "mon", amount: 12500 },
+  { name: "tue", amount: 8300 },
+  { name: "wed", amount: 15700 },
+  { name: "thu", amount: 6400 },
+  { name: "fri", amount: 22100 },
+  { name: "sat", amount: 18900 },
+  { name: "sun", amount: 9600 },
 ];
 
 const MOCK_MONTHLY_DATA = [
-  { name: "Янв", amount: 185000 },
-  { name: "Фев", amount: 162000 },
-  { name: "Мар", amount: 214800 },
-  { name: "Апр", amount: 198000 },
-  { name: "Май", amount: 175000 },
-  { name: "Июн", amount: 210000 },
+  { name: "jan", amount: 185000 },
+  { name: "feb", amount: 162000 },
+  { name: "mar", amount: 214800 },
+  { name: "apr", amount: 198000 },
+  { name: "may", amount: 175000 },
+  { name: "jun", amount: 210000 },
 ];
 
 const CHART_COLORS = [
@@ -67,14 +67,13 @@ export default function AnalyticsPage() {
   const pieData = useMemo(
     () =>
       MOCK_CATEGORY_DATA.map((item) => {
-        const cat = CATEGORIES.find((c) => c.id === item.id);
         return {
-          name: cat?.label || "Другое",
+          name: t(`categories.${item.id}`),
           value: item.amount,
-          color: cat?.color || "#6b7280",
+          color: CATEGORIES.find((c) => c.id === item.id)?.color || "#6b7280",
         };
       }).sort((a, b) => b.value - a.value),
-    [],
+    [t],
   );
 
   const totalSpent = useMemo(
@@ -82,7 +81,10 @@ export default function AnalyticsPage() {
     [],
   );
 
-  const barData = period === "week" ? MOCK_WEEKLY_DATA : MOCK_MONTHLY_DATA;
+  const barData = (period === "week" ? MOCK_WEEKLY_DATA : MOCK_MONTHLY_DATA).map(item => ({
+    ...item,
+    name: t(`time.${item.name}`)
+  }));
 
   const periods: { key: Period; label: string }[] = [
     { key: "week", label: t("analytics.week") },

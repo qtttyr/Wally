@@ -64,7 +64,7 @@ export default function ScanPage() {
       const amount = result.amount || 0;
       const categoryId = result.category_id || 'other';
       const expenseDate = result.date || new Date().toISOString().split('T')[0];
-      const description = result.description || 'Скан чека';
+      const description = result.description || t('scan.scanReceipt');
       const isDemo = result.demo_mode === true;
 
       const insertData = {

@@ -193,8 +193,8 @@ export default function ExpensesPage() {
                         <span className="text-lg">{cat?.icon || '📦'}</span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">{expense.description || cat?.label || t('expenses.expense')}</p>
-                        <p className="text-xs text-muted-foreground">{cat?.label}</p>
+                        <p className="font-medium truncate">{expense.description || t(`categories.${expense.category_id}`) || t('expenses.expense')}</p>
+                        <p className="text-xs text-muted-foreground">{t(`categories.${expense.category_id}`)}</p>
                       </div>
                       <p className="font-semibold tabular-nums">
                         -{expense.amount.toLocaleString('ru-RU')} ₸

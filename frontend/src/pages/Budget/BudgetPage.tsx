@@ -137,7 +137,7 @@ export default function BudgetPage() {
               (c) => !budgets.find((b) => b.categoryId === c.id),
             ).map((c) => (
               <option key={c.id} value={c.id}>
-                {c.label}
+                {t(`categories.${c.id}`)}
               </option>
             ))}
           </select>
@@ -181,7 +181,7 @@ export default function BudgetPage() {
                     <span className="text-lg">{cat?.icon || "📦"}</span>
                   </div>
                   <div>
-                    <p className="font-medium">{cat?.label || "Другое"}</p>
+                    <p className="font-medium">{t(`categories.${budget.categoryId}`)}</p>
                     <div className="flex items-center gap-1.5">
                       {pct >= 100 ? (
                         <AlertTriangleIcon

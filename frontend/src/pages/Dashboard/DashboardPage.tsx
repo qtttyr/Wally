@@ -130,9 +130,9 @@ export default function DashboardPage() {
                     {category?.icon || '💳'}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm truncate">{expense.description || category?.label}</p>
+                    <p className="font-medium text-sm truncate">{expense.description || t(`categories.${expense.category_id}`)}</p>
                     <p className="text-xs text-muted-foreground">
-                      {new Date(expense.date).toLocaleDateString('ru-RU')} • {category?.label}
+                      {new Date(expense.date).toLocaleDateString('ru-RU')} • {t(`categories.${expense.category_id}`)}
                     </p>
                   </div>
                   <p className="font-semibold text-sm tabular-nums">-{expense.amount.toLocaleString('ru-RU')} ₸</p>
