@@ -21,6 +21,12 @@ VALID_CATEGORIES = {
 VALID_CURRENCIES = {"KZT", "RUB", "USD", "EUR"}
 
 
+class ReceiptItem(BaseModel):
+    """Позиция чека - отдельный товар/услуга"""
+    name: str
+    amount: float
+
+
 class ReceiptParseResult(BaseModel):
     """
     Валидированный результат парсинга чека от AI.
@@ -32,6 +38,7 @@ class ReceiptParseResult(BaseModel):
     date: date
     category_id: str
     confidence: float = Field(default=0.5, ge=0.0, le=1.0)
+    items: List[ReceiptItem] = Field(default_factory=list)
     
     @field_validator("category_id")
     @classmethod

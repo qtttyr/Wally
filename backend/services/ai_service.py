@@ -22,9 +22,20 @@ RESPONSE_SCHEMA = {
         "currency": {"type": "STRING"},
         "date": {"type": "STRING"},
         "category_id": {"type": "STRING"},
-        "confidence": {"type": "NUMBER"}
+        "confidence": {"type": "NUMBER"},
+        "items": {
+            "type": "ARRAY",
+            "items": {
+                "type": "OBJECT",
+                "properties": {
+                    "name": {"type": "STRING"},
+                    "amount": {"type": "NUMBER"}
+                },
+                "required": ["name", "amount"]
+            }
+        }
     },
-    "required": ["description", "amount", "currency", "date", "category_id", "confidence"]
+    "required": ["description", "amount", "currency", "date", "category_id", "confidence", "items"]
 }
 
 VISION_PROMPT = f"""You are a receipt parser. Look at the receipt image and extract:
@@ -34,6 +45,7 @@ VISION_PROMPT = f"""You are a receipt parser. Look at the receipt image and extr
 - date: purchase date in YYYY-MM-DD format
 - category_id: one of [{CATEGORY_PROMPT}]
 - confidence: your confidence 0.0-1.0
+- items: array of {{"name": "product name", "amount": price}} - list all individual items found on receipt
 
 Return ONLY valid JSON, no markdown, no extra text.
 """

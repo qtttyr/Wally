@@ -52,6 +52,7 @@ async def process_receipt(
             "date": structured_data.date.isoformat() if structured_data.date else None,
             "category_id": structured_data.category_id,
             "confidence": structured_data.confidence,
+            "items": [{"name": item.name, "amount": item.amount} for item in structured_data.items],
             "demo_mode": False,
         }
 
