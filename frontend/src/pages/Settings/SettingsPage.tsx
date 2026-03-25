@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { 
   UserIcon, PaletteIcon, BellIcon, ShieldIcon,
   LogOutIcon, ChevronRightIcon, MoonIcon, SunIcon,
@@ -9,6 +10,7 @@ import { Button } from '../../components/ui/button';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { useAuth } from '../../hooks/useAuth';
 import { ROUTES } from '../../constants/routes';
+import { LanguageSelector } from '../../components/ui/LanguageSelector';
 
 const SettingsItem = ({ 
   icon: Icon, label, value, onClick, danger 
@@ -35,6 +37,7 @@ const SettingsItem = ({
 );
 
 export default function SettingsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const [isDark, setIsDark] = useState(() => 
@@ -59,7 +62,7 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col gap-5 pb-8">
-      <PageHeader title="Настройки" />
+      <PageHeader title={t('settings.title')} />
 
       {/* Profile Card */}
       <div className="mx-4 rounded-3xl bg-card border border-border/50 p-5">
@@ -81,13 +84,13 @@ export default function SettingsPage() {
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="text-lg font-bold truncate">{user?.name || 'Пользователь'}</h2>
+            <h2 className="text-lg font-bold truncate">{user?.name || t('settings.profile')}</h2>
             <p className="text-sm text-muted-foreground truncate">{user?.email}</p>
             <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
               {(user?.plan as string) === 'premium' ? (
                 <><CrownIcon size={12} /> Premium</>
               ) : (
-                'Free план'
+                'Free'
               )}
             </div>
           </div>
@@ -100,14 +103,14 @@ export default function SettingsPage() {
           <div className="flex items-center gap-3">
             <CrownIcon size={24} />
             <div className="flex-1">
-              <p className="font-bold">Перейти на Premium</p>
-              <p className="text-sm opacity-80">Безлимитные сканы, AI-советник, экспорт</p>
+              <p className="font-bold">Premium</p>
+              <p className="text-sm opacity-80">Unlimited scans, AI advisor, export</p>
             </div>
             <Button 
               variant="secondary" 
               className="rounded-xl font-semibold shadow-none"
             >
-              $4.99/мес
+              $4.99/mo
             </Button>
           </div>
         </div>
@@ -115,9 +118,18 @@ export default function SettingsPage() {
 
       {/* Settings Groups */}
       <div className="mx-4 rounded-3xl bg-card border border-border/50 overflow-hidden divide-y divide-border/50">
-        <SettingsItem icon={UserIcon} label="Редактировать профиль" value={user?.name} />
-        <SettingsItem icon={GlobeIcon} label="Валюта" value="KZT (₸)" />
-        <SettingsItem icon={BellIcon} label="Уведомления" value="Включены" />
+        <SettingsItem icon={UserIcon} label={t('settings.editProfile')} value={user?.name} />
+        <div className="flex items-center gap-3.5 px-4 py-3.5">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
+            <GlobeIcon size={20} className="text-primary" />
+          </div>
+          <div className="flex-1">
+            <p className="font-medium text-sm">{t('settings.language')}</p>
+          </div>
+          <LanguageSelector />
+        </div>
+        <SettingsItem icon={GlobeIcon} label={t('settings.currency')} value={t('settings.currencyValue')} />
+        <SettingsItem icon={BellIcon} label={t('settings.notifications')} value={t('settings.notificationsEnabled')} />
       </div>
 
       <div className="mx-4 rounded-3xl bg-card border border-border/50 overflow-hidden divide-y divide-border/50">
@@ -126,7 +138,7 @@ export default function SettingsPage() {
             {isDark ? <MoonIcon size={20} className="text-primary" /> : <SunIcon size={20} className="text-primary" />}
           </div>
           <div className="flex-1">
-            <p className="font-medium text-sm">Тёмная тема</p>
+            <p className="font-medium text-sm">{t('settings.darkTheme')}</p>
           </div>
           <button
             onClick={toggleTheme}
@@ -135,17 +147,17 @@ export default function SettingsPage() {
             <div className={`absolute top-0.5 size-6 rounded-full bg-white shadow-md transition-transform ${isDark ? 'translate-x-5.5' : 'translate-x-0.5'}`} />
           </button>
         </div>
-        <SettingsItem icon={PaletteIcon} label="Внешний вид" value="Emerald" />
+        <SettingsItem icon={PaletteIcon} label={t('settings.appearance')} value="Emerald" />
       </div>
 
       <div className="mx-4 rounded-3xl bg-card border border-border/50 overflow-hidden divide-y divide-border/50">
-        <SettingsItem icon={ShieldIcon} label="Конфиденциальность" />
-        <SettingsItem icon={HelpCircleIcon} label="Помощь и FAQ" />
-        <SettingsItem icon={HeartIcon} label="Оценить приложение" />
+        <SettingsItem icon={ShieldIcon} label={t('settings.privacyPolicy')} />
+        <SettingsItem icon={HelpCircleIcon} label={t('settings.helpAndFAQ')} />
+        <SettingsItem icon={HeartIcon} label={t('settings.rateApp')} />
       </div>
 
       <div className="mx-4 rounded-3xl bg-card border border-border/50 overflow-hidden">
-        <SettingsItem icon={LogOutIcon} label="Выйти" danger onClick={handleSignOut} />
+        <SettingsItem icon={LogOutIcon} label={t('settings.logout')} danger onClick={handleSignOut} />
       </div>
 
       {/* App Version */}

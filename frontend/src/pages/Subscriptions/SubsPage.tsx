@@ -1,13 +1,15 @@
+import { useTranslation } from 'react-i18next';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { Spinner } from '../../components/ui/spinner';
 import { useSubscriptions } from '../../hooks/useSubscriptions';
 
 export default function SubsPage() {
+  const { t } = useTranslation();
   const { subscriptions, isLoading } = useSubscriptions();
 
   return (
     <div className="flex flex-col gap-4 pb-4">
-      <PageHeader title="Подписки" />
+      <PageHeader title={t('subscriptions.title')} />
 
       {isLoading ? (
         <div className="flex h-[60vh] items-center justify-center">
@@ -15,7 +17,7 @@ export default function SubsPage() {
         </div>
       ) : subscriptions.length === 0 ? (
         <div className="px-4 pt-10 text-center text-muted-foreground">
-          Активных подписок пока нет
+          {t('subscriptions.noSubscriptions')}
         </div>
       ) : (
         <div className="px-4 space-y-2">
@@ -27,12 +29,12 @@ export default function SubsPage() {
               <div className="min-w-0">
                 <div className="truncate font-semibold">{s.name}</div>
                 <div className="text-xs text-muted-foreground">
-                  Следующее списание: {new Date(s.next_payment_date).toLocaleDateString('ru-RU')}
+                  {t('subscriptions.nextPayment')}: {new Date(s.next_payment_date).toLocaleDateString('ru-RU')}
                 </div>
               </div>
               <div className="shrink-0 text-right">
                 <div className="font-bold tabular-nums">{s.amount.toLocaleString('ru-RU')} ₸</div>
-                <div className="text-xs text-muted-foreground">{s.is_active ? 'Активна' : 'Отключена'}</div>
+                <div className="text-xs text-muted-foreground">{s.is_active ? t('subscriptions.active') : t('subscriptions.paused')}</div>
               </div>
             </div>
           ))}

@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useExpenses } from '../../hooks/useExpenses';
 import { Spinner } from '../../components/ui/spinner';
 import { CATEGORIES } from '../../constants/categories';
@@ -12,6 +13,7 @@ import { ROUTES } from '../../constants/routes';
 import { useAuth } from '../../hooks/useAuth';
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { expenses, isLoading } = useExpenses();
@@ -20,7 +22,7 @@ export default function DashboardPage() {
   const monthlyBudget = 200000;
   const remaining = monthlyBudget - totalSpent;
 
-  const firstName = user?.name?.split(' ')[0] || 'Привет';
+  const firstName = user?.name?.split(' ')[0] || t('dashboard.hello');
 
   return (
     <div className="flex flex-col gap-5 pb-4">
@@ -42,13 +44,13 @@ export default function DashboardPage() {
             <div className="flex size-6 items-center justify-center rounded-full bg-white/20">
               <SparklesIcon size={12} />
             </div>
-            AI-совет на сегодня
+            {t('dashboard.aiAdviceToday')}
           </div>
           <p className="text-base font-semibold leading-snug">
-            Ты тратишь на еду в 3 раза больше нормы в этом месяце. Попробуй готовить дома! 🍳
+            {t('dashboard.foodSpendingAdvice')}
           </p>
           <Button variant="secondary" size="sm" className="rounded-full bg-white/90 text-primary hover:bg-white shadow-none">
-            Подробнее
+            {t('dashboard.seeMore')}
             <ArrowRightIcon size={14} className="ml-1" />
           </Button>
         </div>
@@ -62,7 +64,7 @@ export default function DashboardPage() {
               <TrendingDownIcon size={16} className="text-destructive" />
             </div>
           </div>
-          <p className="text-xs text-muted-foreground">Потрачено</p>
+          <p className="text-xs text-muted-foreground">{t('dashboard.spent')}</p>
           <h3 className="text-xl font-bold">{totalSpent.toLocaleString('ru-RU')} ₸</h3>
         </div>
         <div className="rounded-2xl bg-card border border-border/50 p-4 space-y-1 transition-all hover:shadow-md">
@@ -71,7 +73,7 @@ export default function DashboardPage() {
               <WalletIcon size={16} className="text-primary" />
             </div>
           </div>
-          <p className="text-xs text-muted-foreground">Осталось</p>
+          <p className="text-xs text-muted-foreground">{t('dashboard.remaining')}</p>
           <h3 className={`text-xl font-bold ${remaining >= 0 ? 'text-primary' : 'text-destructive'}`}>
             {remaining.toLocaleString('ru-RU')} ₸
           </h3>
@@ -81,7 +83,7 @@ export default function DashboardPage() {
       {/* Budget Progress */}
       <div className="mx-4 rounded-2xl bg-card border border-border/50 p-4 space-y-2">
         <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">Бюджет на месяц</span>
+          <span className="text-muted-foreground">{t('dashboard.monthlyBudget')}</span>
           <span className="font-medium">{Math.round((totalSpent / monthlyBudget) * 100)}%</span>
         </div>
         <div className="h-2.5 rounded-full bg-muted overflow-hidden">
@@ -97,9 +99,9 @@ export default function DashboardPage() {
       {/* Recent Transactions */}
       <div className="space-y-3">
         <div className="flex items-center justify-between px-4">
-          <h2 className="text-base font-bold">Последние операции</h2>
+          <h2 className="text-base font-bold">{t('dashboard.recentTransactions')}</h2>
           <Button variant="link" size="sm" className="text-primary" onClick={() => navigate(ROUTES.EXPENSES)}>
-            Все
+            {t('dashboard.all')}
             <ArrowRightIcon size={14} className="ml-1" />
           </Button>
         </div>
@@ -111,9 +113,9 @@ export default function DashboardPage() {
             </div>
           ) : expenses.length === 0 ? (
             <div className="flex flex-col items-center gap-2 py-8 text-center">
-              <p className="text-muted-foreground">Пока нет расходов</p>
+              <p className="text-muted-foreground">{t('dashboard.noExpenses')}</p>
               <Button variant="outline" className="rounded-2xl" onClick={() => navigate(ROUTES.SCAN)}>
-                Добавить первый
+                {t('dashboard.addFirst')}
               </Button>
             </div>
           ) : (

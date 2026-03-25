@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { 
   SearchIcon, FilterIcon, PlusIcon, CalendarIcon,
   TrendingDownIcon
@@ -13,6 +14,7 @@ import { ROUTES } from '../../constants/routes';
 import { Spinner } from '../../components/ui/spinner';
 
 export default function ExpensesPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { expenses, isLoading } = useExpenses();
   const [search, setSearch] = useState('');
@@ -51,8 +53,8 @@ export default function ExpensesPage() {
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
     
-    if (dateStr === today.toISOString().split('T')[0]) return 'Сегодня';
-    if (dateStr === yesterday.toISOString().split('T')[0]) return 'Вчера';
+    if (dateStr === today.toISOString().split('T')[0]) return t('expenses.today');
+    if (dateStr === yesterday.toISOString().split('T')[0]) return t('expenses.yesterday');
     return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
   };
 
@@ -67,7 +69,7 @@ export default function ExpensesPage() {
   return (
     <div className="flex flex-col gap-4 pb-4">
       <PageHeader 
-        title="Расходы" 
+        title={t('expenses.title')} 
         rightAction={
           <Button 
             size="icon" 
@@ -85,7 +87,7 @@ export default function ExpensesPage() {
         <div className="relative">
           <SearchIcon size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input 
-            placeholder="Поиск расходов..." 
+            placeholder={t('expenses.searchExpenses')} 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="h-12 rounded-2xl pl-10 pr-12 bg-card border-border/50 text-base"
@@ -111,7 +113,7 @@ export default function ExpensesPage() {
                   : 'bg-card border border-border text-muted-foreground'
               }`}
             >
-              Все
+              {t('expenses.all')}
             </button>
             {CATEGORIES.map(cat => (
               <button
@@ -123,7 +125,7 @@ export default function ExpensesPage() {
                     : 'bg-card border border-border text-muted-foreground'
                 }`}
               >
-                {cat.label}
+                {t(`categories.${cat.id}`)}
               </button>
             ))}
           </div>
@@ -136,12 +138,12 @@ export default function ExpensesPage() {
               <TrendingDownIcon size={18} className="text-primary" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Всего потрачено</p>
+              <p className="text-xs text-muted-foreground">{t('expenses.totalSpent')}</p>
               <p className="text-lg font-bold">{totalFiltered.toLocaleString('ru-RU')} ₸</p>
             </div>
           </div>
           <div className="text-right">
-            <p className="text-xs text-muted-foreground">Операций</p>
+            <p className="text-xs text-muted-foreground">{t('expenses.transactions')}</p>
             <p className="text-lg font-bold">{filtered.length}</p>
           </div>
         </div>
@@ -155,14 +157,14 @@ export default function ExpensesPage() {
               <CalendarIcon size={28} className="text-muted-foreground" />
             </div>
             <p className="text-muted-foreground">
-              {search || selectedCategory ? 'Ничего не найдено' : 'Пока нет расходов'}
+              {search || selectedCategory ? t('expenses.nothingFound') : t('expenses.noExpenses')}
             </p>
             <Button 
               variant="outline" 
               className="rounded-2xl"
               onClick={() => navigate(ROUTES.SCAN)}
             >
-              Добавить расход
+              {t('expenses.addExpense')}
             </Button>
           </div>
         ) : (
@@ -191,7 +193,7 @@ export default function ExpensesPage() {
                         <span className="text-lg">{cat?.icon || '📦'}</span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">{expense.description || cat?.label || 'Расход'}</p>
+                        <p className="font-medium truncate">{expense.description || cat?.label || t('expenses.expense')}</p>
                         <p className="text-xs text-muted-foreground">{cat?.label}</p>
                       </div>
                       <p className="font-semibold tabular-nums">

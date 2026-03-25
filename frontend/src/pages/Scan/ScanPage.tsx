@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CameraIcon, UploadIcon, SparklesIcon, CheckCircleIcon, AlertCircleIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/ui/button';
@@ -15,6 +16,7 @@ interface ScanResult {
 }
 
 export default function ScanPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { fetchExpenses } = useExpensesStore();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -37,7 +39,7 @@ export default function ScanPage() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        setScanResult({ success: false, message: 'Не авторизован. Войдите в аккаунт.' });
+        setScanResult({ success: false, message: t('scan.notAuthorized') });
         return;
       }
 
@@ -86,31 +88,31 @@ export default function ScanPage() {
         
       if (error) {
         console.error('Failed to save expense:', error);
-        setScanResult({ success: false, message: `Ошибка сохранения: ${error.message}` });
+        setScanResult({ success: false, message: `${t('scan.saveError')}: ${error.message}` });
         return;
       }
       
       if (!insertResult) {
         console.error('No data returned after insert');
-        setScanResult({ success: false, message: 'Расход не сохранился. Попробуйте ещё раз.' });
+        setScanResult({ success: false, message: t('scan.expenseNotSaved') });
         return;
       }
       
       await fetchExpenses();
       
       const currencySymbol = result.currency === 'KZT' ? '₸' : '₽';
-      const demoNote = isDemo ? ' (демо-режим)' : '';
+      const demoNote = isDemo ? ` ${t('scan.demoModeNote')}` : '';
       
       setScanResult({
         success: true,
-        message: `Чек на ${amount.toLocaleString()} ${currencySymbol}${demoNote} успешно добавлен!`,
+        message: t('scan.receiptAdded', { amount: amount.toLocaleString(), currency: currencySymbol }) + demoNote,
         amount,
         demoMode: isDemo
       });
       
     } catch (err: unknown) {
       console.error("Scan error:", err);
-      const errorMessage = err instanceof Error ? err.message : 'Не удалось распознать чек';
+      const errorMessage = err instanceof Error ? err.message : t('scan.couldNotRecognize');
       setScanResult({ success: false, message: errorMessage });
     } finally {
       setIsProcessing(false);
@@ -119,7 +121,7 @@ export default function ScanPage() {
 
   return (
     <div className="flex flex-col gap-6 p-4 pb-28">
-      <PageHeader title="Скан чека" />
+      <PageHeader title={t('scan.title')} />
       
       <div className="mt-4 flex flex-col items-center justify-center space-y-6">
         
@@ -146,7 +148,7 @@ export default function ScanPage() {
                 className="w-full mt-3 rounded-xl"
                 onClick={() => navigate(ROUTES.EXPENSES)}
               >
-                Посмотреть расходы
+                {t('scan.viewExpenses')}
               </Button>
             )}
           </div>
@@ -170,12 +172,12 @@ export default function ScanPage() {
 
         <div className="space-y-2 text-center">
           <h2 className="text-2xl font-bold">
-            {isProcessing ? 'Обработка...' : scanResult?.success ? 'Готово!' : 'Умный сканер'}
+            {isProcessing ? t('scan.processing') : scanResult?.success ? t('scan.done') : t('scan.smartScanner')}
           </h2>
           <p className="text-muted-foreground px-4">
             {isProcessing 
-              ? "Wally анализирует чек и распределяет товары по категориям..."
-              : "Наведи камеру на чек, а Wally сам всё распознает и категоризирует"}
+              ? t('scan.analyzingReceipt')
+              : t('scan.pointCameraAtReceipt')}
           </p>
         </div>
 
@@ -204,7 +206,7 @@ export default function ScanPage() {
               onClick={() => cameraInputRef.current?.click()}
             >
               <CameraIcon className="mr-2" size={24} />
-              Сделать фото
+              {t('scan.takePhoto')}
             </Button>
 
             <Button 
@@ -214,7 +216,7 @@ export default function ScanPage() {
               onClick={() => galleryInputRef.current?.click()}
             >
               <UploadIcon className="mr-2" size={24} />
-              Загрузить из галереи
+              {t('scan.chooseFromGallery')}
             </Button>
           </div>
         )}
@@ -229,7 +231,7 @@ export default function ScanPage() {
             }}
           >
             <CameraIcon className="mr-2" size={24} />
-            Сканировать ещё
+            {t('scan.scanAgain')}
           </Button>
         )}
       </div>

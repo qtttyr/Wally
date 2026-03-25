@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PlusIcon, AlertTriangleIcon, CheckCircleIcon } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -21,6 +22,7 @@ const MOCK_BUDGETS: Budget[] = [
 ];
 
 export default function BudgetPage() {
+  const { t } = useTranslation();
   const [budgets] = useState<Budget[]>(MOCK_BUDGETS);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newCategory, setNewCategory] = useState('');
@@ -32,15 +34,15 @@ export default function BudgetPage() {
 
   const getStatus = (b: Budget) => {
     const pct = (b.spent / b.limit) * 100;
-    if (pct >= 100) return { label: 'Превышен', color: 'text-destructive', bg: 'bg-destructive', ring: 'ring-destructive/20' };
-    if (pct >= 80) return { label: 'Почти лимит', color: 'text-amber-500', bg: 'bg-amber-500', ring: 'ring-amber-500/20' };
-    return { label: 'В норме', color: 'text-primary', bg: 'bg-primary', ring: 'ring-primary/20' };
+    if (pct >= 100) return { label: t('budget.statusOver'), color: 'text-destructive', bg: 'bg-destructive', ring: 'ring-destructive/20' };
+    if (pct >= 80) return { label: t('budget.statusNearLimit'), color: 'text-amber-500', bg: 'bg-amber-500', ring: 'ring-amber-500/20' };
+    return { label: t('budget.statusNormal'), color: 'text-primary', bg: 'bg-primary', ring: 'ring-primary/20' };
   };
 
   return (
     <div className="flex flex-col gap-5 pb-4">
       <PageHeader
-        title="Бюджет"
+        title={t('budget.title')}
         rightAction={
           <Button
             size="icon"
@@ -57,9 +59,9 @@ export default function BudgetPage() {
       <div className="mx-4 rounded-3xl bg-card border border-border/50 p-5 space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-muted-foreground">Общий бюджет</p>
+            <p className="text-sm text-muted-foreground">{t('budget.totalBudget')}</p>
             <p className="text-2xl font-bold">{totalSpent.toLocaleString('ru-RU')} ₸</p>
-            <p className="text-sm text-muted-foreground">из {totalLimit.toLocaleString('ru-RU')} ₸</p>
+            <p className="text-sm text-muted-foreground">{t('budget.of')} {totalLimit.toLocaleString('ru-RU')} ₸</p>
           </div>
           <div className="relative flex size-20 items-center justify-center">
             <svg className="size-20 -rotate-90" viewBox="0 0 36 36">
@@ -95,26 +97,26 @@ export default function BudgetPage() {
       {/* Add Budget Form */}
       {showAddForm && (
         <div className="mx-4 rounded-2xl bg-card border border-primary/20 p-4 space-y-3 animate-in fade-in slide-in-from-top-2">
-          <h3 className="font-semibold">Новый лимит</h3>
+          <h3 className="font-semibold">{t('budget.newLimit')}</h3>
           <select
             value={newCategory}
             onChange={(e) => setNewCategory(e.target.value)}
             className="h-12 w-full rounded-xl border bg-background px-3 text-sm"
           >
-            <option value="">Выберите категорию</option>
+            <option value="">{t('budget.selectCategory')}</option>
             {CATEGORIES.filter(c => !budgets.find(b => b.categoryId === c.id)).map(c => (
               <option key={c.id} value={c.id}>{c.label}</option>
             ))}
           </select>
           <Input
             type="number"
-            placeholder="Лимит (₸)"
+            placeholder={t('budget.limitAmount')}
             value={newLimit}
             onChange={(e) => setNewLimit(e.target.value)}
             className="h-12 rounded-xl text-base"
           />
           <Button className="w-full h-12 rounded-xl" disabled={!newCategory || !newLimit}>
-            Добавить лимит
+            {t('budget.addLimit')}
           </Button>
         </div>
       )}
@@ -151,7 +153,7 @@ export default function BudgetPage() {
                 </div>
                 <div className="text-right">
                   <p className="font-semibold tabular-nums">{budget.spent.toLocaleString('ru-RU')} ₸</p>
-                  <p className="text-xs text-muted-foreground">из {budget.limit.toLocaleString('ru-RU')} ₸</p>
+                  <p className="text-xs text-muted-foreground">{t('budget.of')} {budget.limit.toLocaleString('ru-RU')} ₸</p>
                 </div>
               </div>
 
@@ -163,11 +165,11 @@ export default function BudgetPage() {
               </div>
 
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>{pct}% использовано</span>
+                <span>{pct}% {t('budget.used')}</span>
                 <span className={remaining < 0 ? 'text-destructive font-medium' : ''}>
                   {remaining >= 0 
-                    ? `Осталось ${remaining.toLocaleString('ru-RU')} ₸` 
-                    : `Превышен на ${Math.abs(remaining).toLocaleString('ru-RU')} ₸`}
+                    ? t('budget.remainingAmount', { amount: remaining.toLocaleString('ru-RU') + ' ₸' })
+                    : t('budget.overBudgetAmount', { amount: Math.abs(remaining).toLocaleString('ru-RU') + ' ₸' })}
                 </span>
               </div>
             </div>

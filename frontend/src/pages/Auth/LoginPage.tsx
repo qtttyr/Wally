@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { useAuth } from '../../hooks/useAuth';
@@ -7,6 +8,7 @@ import { ROUTES } from '../../constants/routes';
 import { WalletIcon, EyeIcon, EyeOffIcon, MailIcon, LockIcon } from 'lucide-react';
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { signInWithGoogle, signInWithEmail, authError, clearError, isLoading } = useAuth();
 
@@ -39,7 +41,7 @@ export default function LoginPage() {
         <div className="space-y-1 text-center">
           <h1 className="text-3xl font-extrabold tracking-tight">Wally</h1>
           <p className="text-sm text-muted-foreground">
-            Войдите, чтобы управлять финансами
+            {t('auth.signInWithEmail')}
           </p>
         </div>
 
@@ -56,7 +58,7 @@ export default function LoginPage() {
             <MailIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="email"
-              placeholder="Email"
+              placeholder={t('auth.enterEmail')}
               value={email}
               onChange={(e) => { setEmail(e.target.value); clearError(); }}
               className="h-13 rounded-2xl pl-11 text-base"
@@ -69,7 +71,7 @@ export default function LoginPage() {
             <LockIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
               type={showPassword ? 'text' : 'password'}
-              placeholder="Пароль"
+              placeholder={t('auth.enterPassword')}
               value={password}
               onChange={(e) => { setPassword(e.target.value); clearError(); }}
               className="h-13 rounded-2xl pl-11 pr-11 text-base"
@@ -91,14 +93,14 @@ export default function LoginPage() {
             disabled={isSubmitting || isLoading}
             className="h-13 w-full rounded-2xl text-base font-semibold shadow-lg shadow-primary/20 transition-all active:scale-[0.98]"
           >
-            {isSubmitting ? 'Вхожу...' : 'Войти'}
+            {isSubmitting ? t('auth.loggingIn') : t('auth.signIn')}
           </Button>
         </form>
 
         {/* Divider */}
         <div className="flex w-full items-center gap-4">
           <div className="h-px flex-1 bg-border" />
-          <span className="text-xs text-muted-foreground">или</span>
+          <span className="text-xs text-muted-foreground">{t('auth.or')}</span>
           <div className="h-px flex-1 bg-border" />
         </div>
 
@@ -115,20 +117,20 @@ export default function LoginPage() {
             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
           </svg>
-          Войти с Google
+          {t('auth.signInWithGoogle')}
         </Button>
       </div>
 
       {/* Bottom: Register Link */}
       <div className="w-full max-w-sm space-y-4 pt-8">
         <p className="text-center text-sm text-muted-foreground">
-          Нет аккаунта?{' '}
+          {t('auth.noAccount')}{' '}
           <Link to={ROUTES.AUTH_REGISTER} className="font-semibold text-primary hover:underline">
-            Зарегистрироваться
+            {t('auth.signUp')}
           </Link>
         </p>
         <p className="text-center text-xs text-muted-foreground/60">
-          Нажимая «Войти», вы соглашаетесь с условиями использования
+          {t('auth.terms')}
         </p>
       </div>
     </div>

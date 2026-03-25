@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { useAuth } from '../../hooks/useAuth';
@@ -7,6 +8,7 @@ import { ROUTES } from '../../constants/routes';
 import { WalletIcon, EyeIcon, EyeOffIcon, MailIcon, LockIcon, UserIcon, CheckCircleIcon } from 'lucide-react';
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { signUpWithEmail, signInWithGoogle, authError, clearError, isLoading } = useAuth();
 
@@ -19,10 +21,10 @@ export default function RegisterPage() {
 
   const passwordStrength = (() => {
     if (password.length === 0) return { level: 0, text: '', color: '' };
-    if (password.length < 6) return { level: 1, text: 'Слабый', color: 'bg-destructive' };
-    if (password.length < 8) return { level: 2, text: 'Средний', color: 'bg-yellow-500' };
-    if (password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password)) return { level: 4, text: 'Сильный', color: 'bg-chart-1' };
-    return { level: 3, text: 'Хороший', color: 'bg-primary' };
+    if (password.length < 6) return { level: 1, text: t('auth.passwordWeak'), color: 'bg-destructive' };
+    if (password.length < 8) return { level: 2, text: t('auth.passwordMedium'), color: 'bg-yellow-500' };
+    if (password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password)) return { level: 4, text: t('auth.passwordStrong'), color: 'bg-chart-1' };
+    return { level: 3, text: t('auth.passwordGood'), color: 'bg-primary' };
   })();
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -45,16 +47,16 @@ export default function RegisterPage() {
             <CheckCircleIcon size={48} className="text-chart-1" />
           </div>
           <div className="space-y-2">
-            <h2 className="text-2xl font-bold">Почти готово!</h2>
+            <h2 className="text-2xl font-bold">{t('auth.almostDone')}</h2>
             <p className="max-w-[280px] text-muted-foreground">
-              Мы отправили ссылку для подтверждения на <span className="font-medium text-foreground">{email}</span>
+              {t('auth.confirmationSent')} <span className="font-medium text-foreground">{email}</span>
             </p>
           </div>
           <Button
             onClick={() => navigate(ROUTES.AUTH)}
             className="h-13 w-full max-w-sm rounded-2xl text-base font-semibold"
           >
-            Перейти к входу
+            {t('auth.signIn')}
           </Button>
         </div>
       </div>
@@ -74,9 +76,9 @@ export default function RegisterPage() {
         </div>
 
         <div className="space-y-1 text-center">
-          <h1 className="text-2xl font-extrabold tracking-tight">Создать аккаунт</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight">{t('auth.signUp')}</h1>
           <p className="text-sm text-muted-foreground">
-            Присоединяйтесь к Wally и контролируйте финансы
+            {t('auth.registrationSuccess')}
           </p>
         </div>
 
@@ -93,7 +95,7 @@ export default function RegisterPage() {
             <UserIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="text"
-              placeholder="Ваше имя"
+              placeholder={t('auth.enterName')}
               value={name}
               onChange={(e) => { setName(e.target.value); clearError(); }}
               className="h-13 rounded-2xl pl-11 text-base"
@@ -106,7 +108,7 @@ export default function RegisterPage() {
             <MailIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="email"
-              placeholder="Email"
+              placeholder={t('auth.enterEmail')}
               value={email}
               onChange={(e) => { setEmail(e.target.value); clearError(); }}
               className="h-13 rounded-2xl pl-11 text-base"
@@ -119,7 +121,7 @@ export default function RegisterPage() {
             <LockIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
               type={showPassword ? 'text' : 'password'}
-              placeholder="Пароль (от 6 символов)"
+              placeholder={t('auth.passwordMinLength')}
               value={password}
               onChange={(e) => { setPassword(e.target.value); clearError(); }}
               className="h-13 rounded-2xl pl-11 pr-11 text-base"
@@ -158,14 +160,14 @@ export default function RegisterPage() {
             disabled={isSubmitting || isLoading || password.length < 6}
             className="h-13 w-full rounded-2xl text-base font-semibold shadow-lg shadow-primary/20 transition-all active:scale-[0.98]"
           >
-            {isSubmitting ? 'Создаю аккаунт...' : 'Зарегистрироваться'}
+            {isSubmitting ? t('auth.creatingAccount') : t('auth.signUp')}
           </Button>
         </form>
 
         {/* Divider */}
         <div className="flex w-full items-center gap-4">
           <div className="h-px flex-1 bg-border" />
-          <span className="text-xs text-muted-foreground">или</span>
+          <span className="text-xs text-muted-foreground">{t('auth.or')}</span>
           <div className="h-px flex-1 bg-border" />
         </div>
 
@@ -182,16 +184,16 @@ export default function RegisterPage() {
             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
           </svg>
-          Продолжить с Google
+          {t('auth.continueWithGoogle')}
         </Button>
       </div>
 
       {/* Bottom: Login Link */}
       <div className="w-full max-w-sm space-y-4 pt-8">
         <p className="text-center text-sm text-muted-foreground">
-          Уже есть аккаунт?{' '}
+          {t('auth.alreadyHaveAccount')}{' '}
           <Link to={ROUTES.AUTH} className="font-semibold text-primary hover:underline">
-            Войти
+            {t('auth.signIn')}
           </Link>
         </p>
       </div>

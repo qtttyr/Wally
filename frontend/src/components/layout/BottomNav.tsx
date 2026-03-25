@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { 
   BarChart3Icon, 
   LayoutDashboardIcon, 
@@ -10,12 +11,13 @@ import { ROUTES } from '../../constants/routes';
 import { cn } from '../../lib/utils';
 
 export const BottomNav = () => {
+  const { t } = useTranslation();
   const navItems = [
-    { icon: LayoutDashboardIcon, label: 'Главная', path: ROUTES.DASHBOARD },
-    { icon: ReceiptIcon, label: 'Траты', path: ROUTES.EXPENSES },
-    { icon: ScanIcon, label: 'Скан', path: ROUTES.SCAN, primary: true },
-    { icon: TargetIcon, label: 'Бюджет', path: ROUTES.BUDGET },
-    { icon: BarChart3Icon, label: 'Аналитика', path: ROUTES.ANALYTICS },
+    { icon: LayoutDashboardIcon, label: t('nav.dashboard'), path: ROUTES.DASHBOARD },
+    { icon: ReceiptIcon, label: t('nav.expenses'), path: ROUTES.EXPENSES },
+    { icon: ScanIcon, label: t('nav.scan'), path: ROUTES.SCAN, primary: true },
+    { icon: TargetIcon, label: t('nav.budget'), path: ROUTES.BUDGET },
+    { icon: BarChart3Icon, label: t('nav.analytics'), path: ROUTES.ANALYTICS },
   ];
 
   return (

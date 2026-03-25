@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip 
@@ -45,6 +46,7 @@ const CHART_COLORS = [
 ];
 
 export default function AnalyticsPage() {
+  const { t } = useTranslation();
   const [period, setPeriod] = useState<Period>('month');
 
   const pieData = useMemo(() => 
@@ -66,14 +68,14 @@ export default function AnalyticsPage() {
   const barData = period === 'week' ? MOCK_WEEKLY_DATA : MOCK_MONTHLY_DATA;
 
   const periods: { key: Period; label: string }[] = [
-    { key: 'week', label: 'Неделя' },
-    { key: 'month', label: 'Месяц' },
-    { key: 'year', label: 'Год' },
+    { key: 'week', label: t('analytics.week') },
+    { key: 'month', label: t('analytics.month') },
+    { key: 'year', label: t('analytics.year') },
   ];
 
   return (
     <div className="flex flex-col gap-5 pb-4">
-      <PageHeader title="Аналитика" />
+      <PageHeader title={t('analytics.title')} />
 
       {/* Period Selector */}
       <div className="mx-4 flex rounded-2xl bg-muted p-1">
@@ -99,7 +101,7 @@ export default function AnalyticsPage() {
             <div className="flex size-8 items-center justify-center rounded-lg bg-destructive/10">
               <TrendingDownIcon size={16} className="text-destructive" />
             </div>
-            <span className="text-xs text-muted-foreground">Расходы</span>
+            <span className="text-xs text-muted-foreground">{t('analytics.expenses')}</span>
           </div>
           <p className="text-xl font-bold">{totalSpent.toLocaleString('ru-RU')} ₸</p>
         </div>
@@ -108,7 +110,7 @@ export default function AnalyticsPage() {
             <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10">
               <TrendingUpIcon size={16} className="text-primary" />
             </div>
-            <span className="text-xs text-muted-foreground">vs прошлый</span>
+            <span className="text-xs text-muted-foreground">{t('analytics.vsPrevious')}</span>
           </div>
           <p className="text-xl font-bold text-primary">-12%</p>
         </div>
@@ -118,7 +120,7 @@ export default function AnalyticsPage() {
       <div className="mx-4 rounded-3xl bg-card border border-border/50 p-5 space-y-4">
         <div className="flex items-center gap-2">
           <CalendarIcon size={18} className="text-muted-foreground" />
-          <h3 className="font-semibold">Динамика расходов</h3>
+          <h3 className="font-semibold">{t('analytics.spendingDynamics')}</h3>
         </div>
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
@@ -140,7 +142,7 @@ export default function AnalyticsPage() {
               <Tooltip 
                 formatter={(value: unknown) => {
                   const numValue = value as number;
-                  return [`${numValue?.toLocaleString('ru-RU')} ₸`, 'Расходы'];
+                  return [`${numValue?.toLocaleString('ru-RU')} ₸`, t('analytics.expenses')];
                 }}
                 contentStyle={{ 
                   borderRadius: '12px', 
@@ -157,7 +159,7 @@ export default function AnalyticsPage() {
 
       {/* Pie Chart - By Category */}
       <div className="mx-4 rounded-3xl bg-card border border-border/50 p-5 space-y-4">
-        <h3 className="font-semibold">По категориям</h3>
+        <h3 className="font-semibold">{t('analytics.byCategory')}</h3>
         
         <div className="flex items-center gap-4">
           <div className="relative size-40 shrink-0">
@@ -180,7 +182,7 @@ export default function AnalyticsPage() {
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-xs text-muted-foreground">Всего</span>
+              <span className="text-xs text-muted-foreground">{t('analytics.total')}</span>
               <span className="text-sm font-bold">{(totalSpent / 1000).toFixed(0)}k ₸</span>
             </div>
           </div>
@@ -206,7 +208,7 @@ export default function AnalyticsPage() {
 
       {/* Top Categories List */}
       <div className="mx-4 space-y-2">
-        <h3 className="font-semibold px-1">Топ расходов</h3>
+        <h3 className="font-semibold px-1">{t('analytics.topExpenses')}</h3>
         {pieData.map((item, i) => (
           <div key={item.name} className="flex items-center gap-3 rounded-2xl bg-card border border-border/50 p-3.5">
             <div 
