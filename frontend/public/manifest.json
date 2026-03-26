@@ -12,28 +12,10 @@
   "categories": ["finance", "utilities"],
   "icons": [
     {
-      "src": "/wally-logo.svg",
+      "src": "/icon.jpg",
       "sizes": "any",
-      "type": "image/svg+xml",
+      "type": "image/jpeg",
       "purpose": "any"
-    },
-    {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-512-maskable.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
     }
   ],
   "shortcuts": [
@@ -43,7 +25,7 @@
       "url": "/scan",
       "icons": [
         {
-          "src": "/wally-logo.svg",
+          "src": "/icon.svg",
           "sizes": "any"
         }
       ]
@@ -54,7 +36,7 @@
       "url": "/expenses",
       "icons": [
         {
-          "src": "/wally-logo.svg",
+          "src": "/icon.jpg",
           "sizes": "any"
         }
       ]

@@ -3,6 +3,7 @@ export interface User {
   email: string;
   name?: string;
   avatar_url?: string;
-  plan: "free" | "pro";
+  plan: "free" | "premium";
+  currency?: string;
   created_at: string;
 }

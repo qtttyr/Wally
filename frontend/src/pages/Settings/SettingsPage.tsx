@@ -4,18 +4,22 @@ import { useTranslation } from 'react-i18next';
 import { 
   UserIcon, PaletteIcon, BellIcon, ShieldIcon,
   LogOutIcon, ChevronRightIcon, MoonIcon, SunIcon,
-  GlobeIcon, CrownIcon, HelpCircleIcon, HeartIcon, WalletIcon
+  GlobeIcon, CrownIcon, HelpCircleIcon, HeartIcon, WalletIcon,
+  CheckIcon
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { useAuth } from '../../hooks/useAuth';
 import { ROUTES } from '../../constants/routes';
 import { LanguageSelector } from '../../components/ui/LanguageSelector';
+import { Modal } from '../../components/ui/Modal';
+import { CURRENCIES, getCurrencySymbol } from '../../constants/currencies';
 
 const SettingsItem = ({ 
-  icon: Icon, label, value, onClick, danger 
+  icon: Icon, label, value, onClick, danger, trailing 
 }: { 
-  icon: React.ElementType; label: string; value?: string; onClick?: () => void; danger?: boolean;
+  icon: React.ElementType; label: string; value?: string; onClick?: () => void; danger?: boolean; trailing?: React.ReactNode;
 }) => (
   <button
     onClick={onClick}
@@ -28,21 +32,37 @@ const SettingsItem = ({
     }`}>
       <Icon size={20} className={danger ? 'text-destructive' : 'text-primary'} />
     </div>
-    <div className="flex-1">
+    <div className="flex-1 min-w-0">
       <p className="font-medium text-sm">{label}</p>
       {value && <p className="text-xs text-muted-foreground">{value}</p>}
     </div>
-    {!danger && <ChevronRightIcon size={18} className="text-muted-foreground" />}
+    {trailing || (!danger && <ChevronRightIcon size={18} className="text-muted-foreground" />)}
   </button>
 );
 
 export default function SettingsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user, signOut, updateProfile } = useAuth();
   const [isDark, setIsDark] = useState(() => 
     typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : false
   );
+  
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showCurrencyModal, setShowCurrencyModal] = useState(false);
+  const [showNotificationsModal, setShowNotificationsModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const [showRateModal, setShowRateModal] = useState(false);
+  
+  const [editName, setEditName] = useState(user?.name || '');
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  
+  const [notifications, setNotifications] = useState({
+    push: true,
+    email: false,
+    weekly: true,
+  });
 
   const toggleTheme = () => {
     const newDark = !isDark;
@@ -58,6 +78,18 @@ export default function SettingsPage() {
   const handleSignOut = async () => {
     await signOut();
     navigate(ROUTES.AUTH);
+  };
+
+  const handleSaveProfile = async () => {
+    setIsSavingProfile(true);
+    await updateProfile({ name: editName });
+    setIsSavingProfile(false);
+    setShowProfileModal(false);
+  };
+
+  const handleCurrencyChange = async (currency: string) => {
+    await updateProfile({ currency });
+    setShowCurrencyModal(false);
   };
 
   return (
@@ -118,7 +150,15 @@ export default function SettingsPage() {
 
       {/* Settings Groups */}
       <div className="mx-4 rounded-3xl bg-card border border-border/50 overflow-hidden divide-y divide-border/50">
-        <SettingsItem icon={UserIcon} label={t('settings.editProfile')} value={user?.name} />
+        <SettingsItem 
+          icon={UserIcon} 
+          label={t('settings.editProfile')} 
+          value={user?.name} 
+          onClick={() => {
+            setEditName(user?.name || '');
+            setShowProfileModal(true);
+          }} 
+        />
         <div className="flex items-center gap-3.5 px-4 py-3.5">
           <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
             <GlobeIcon size={20} className="text-primary" />
@@ -128,8 +168,18 @@ export default function SettingsPage() {
           </div>
           <LanguageSelector />
         </div>
-        <SettingsItem icon={GlobeIcon} label={t('settings.currency')} value={t('settings.currencyValue')} />
-        <SettingsItem icon={BellIcon} label={t('settings.notifications')} value={t('settings.notificationsEnabled')} />
+        <SettingsItem 
+          icon={GlobeIcon} 
+          label={t('settings.currency')} 
+          value={`${user?.currency || 'KZT'} (${getCurrencySymbol(user?.currency || 'KZT')})`}
+          onClick={() => setShowCurrencyModal(true)} 
+        />
+        <SettingsItem 
+          icon={BellIcon} 
+          label={t('settings.notifications')} 
+          value={notifications.push ? t('settings.notificationsEnabled') : t('settings.notificationsDisabled')}
+          onClick={() => setShowNotificationsModal(true)} 
+        />
       </div>
 
       <div className="mx-4 rounded-3xl bg-card border border-border/50 overflow-hidden divide-y divide-border/50">
@@ -151,9 +201,9 @@ export default function SettingsPage() {
       </div>
 
       <div className="mx-4 rounded-3xl bg-card border border-border/50 overflow-hidden divide-y divide-border/50">
-        <SettingsItem icon={ShieldIcon} label={t('settings.privacyPolicy')} />
-        <SettingsItem icon={HelpCircleIcon} label={t('settings.helpAndFAQ')} />
-        <SettingsItem icon={HeartIcon} label={t('settings.rateApp')} />
+        <SettingsItem icon={ShieldIcon} label={t('settings.privacyPolicy')} onClick={() => setShowPrivacyModal(true)} />
+        <SettingsItem icon={HelpCircleIcon} label={t('settings.helpAndFAQ')} onClick={() => setShowHelpModal(true)} />
+        <SettingsItem icon={HeartIcon} label={t('settings.rateApp')} onClick={() => setShowRateModal(true)} />
       </div>
 
       <div className="mx-4 rounded-3xl bg-card border border-border/50 overflow-hidden">
@@ -164,6 +214,150 @@ export default function SettingsPage() {
       <p className="text-center text-xs text-muted-foreground/50 pt-2">
         Wally v1.0.0 • AI Financial Assistant
       </p>
+
+      {/* Edit Profile Modal */}
+      <Modal isOpen={showProfileModal} onClose={() => setShowProfileModal(false)} title={t('settings.editProfile')}>
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm text-muted-foreground">{t('auth.name')}</label>
+            <Input 
+              value={editName} 
+              onChange={(e) => setEditName(e.target.value)}
+              placeholder={t('auth.namePlaceholder')}
+            />
+          </div>
+          <Button 
+            className="w-full" 
+            onClick={handleSaveProfile}
+            disabled={isSavingProfile}
+          >
+            {isSavingProfile ? t('common.saving') : t('common.save')}
+          </Button>
+        </div>
+      </Modal>
+
+      {/* Currency Modal */}
+      <Modal isOpen={showCurrencyModal} onClose={() => setShowCurrencyModal(false)} title={t('settings.currency')}>
+        <div className="space-y-2 max-h-80 overflow-y-auto">
+          {CURRENCIES.map(currency => (
+            <button
+              key={currency.code}
+              onClick={() => handleCurrencyChange(currency.code)}
+              className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${
+                user?.currency === currency.code 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'hover:bg-muted'
+              }`}
+            >
+              <span className="text-2xl">{currency.symbol}</span>
+              <div className="flex-1 text-left">
+                <p className="font-medium">{currency.code}</p>
+                <p className="text-xs opacity-70">{currency.name}</p>
+              </div>
+              {user?.currency === currency.code && <CheckIcon size={20} />}
+            </button>
+          ))}
+        </div>
+      </Modal>
+
+      {/* Notifications Modal */}
+      <Modal isOpen={showNotificationsModal} onClose={() => setShowNotificationsModal(false)} title={t('settings.notifications')}>
+        <div className="space-y-4">
+          <button
+            onClick={() => setNotifications(n => ({ ...n, push: !n.push }))}
+            className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-muted"
+          >
+            <div className="text-left">
+              <p className="font-medium">Push-уведомления</p>
+              <p className="text-xs text-muted-foreground">Уведомления на телефон</p>
+            </div>
+            <div className={`w-10 h-6 rounded-full transition-colors ${notifications.push ? 'bg-primary' : 'bg-muted'}`}>
+              <div className={`size-5 bg-white rounded-full mt-0.5 transition-transform ${notifications.push ? 'translate-x-4.5' : 'translate-x-0.5'}`} />
+            </div>
+          </button>
+          
+          <button
+            onClick={() => setNotifications(n => ({ ...n, email: !n.email }))}
+            className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-muted"
+          >
+            <div className="text-left">
+              <p className="font-medium">Email-уведомления</p>
+              <p className="text-xs text-muted-foreground">Рассылка на почту</p>
+            </div>
+            <div className={`w-10 h-6 rounded-full transition-colors ${notifications.email ? 'bg-primary' : 'bg-muted'}`}>
+              <div className={`size-5 bg-white rounded-full mt-0.5 transition-transform ${notifications.email ? 'translate-x-4.5' : 'translate-x-0.5'}`} />
+            </div>
+          </button>
+          
+          <button
+            onClick={() => setNotifications(n => ({ ...n, weekly: !n.weekly }))}
+            className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-muted"
+          >
+            <div className="text-left">
+              <p className="font-medium">Еженедельный отчёт</p>
+              <p className="text-xs text-muted-foreground">Сводка расходов за неделю</p>
+            </div>
+            <div className={`w-10 h-6 rounded-full transition-colors ${notifications.weekly ? 'bg-primary' : 'bg-muted'}`}>
+              <div className={`size-5 bg-white rounded-full mt-0.5 transition-transform ${notifications.weekly ? 'translate-x-4.5' : 'translate-x-0.5'}`} />
+            </div>
+          </button>
+        </div>
+      </Modal>
+
+      {/* Privacy Policy Modal */}
+      <Modal isOpen={showPrivacyModal} onClose={() => setShowPrivacyModal(false)} title={t('settings.privacyPolicy')}>
+        <div className="space-y-4 text-sm text-muted-foreground">
+          <p>Wally — ваш персональный финансовый помощник. Мы заботимся о конфиденциальности ваших данных.</p>
+          <p><strong>Какие данные мы собираем:</strong></p>
+          <ul className="list-disc pl-4 space-y-1">
+            <li>Данные профиля (имя, email)</li>
+            <li>История расходов и сканированные чеки</li>
+            <li>Настройки приложения</li>
+          </ul>
+          <p><strong>Как мы используем данные:</strong></p>
+          <ul className="list-disc pl-4 space-y-1">
+            <li>Для работы приложения и синхронизации данных</li>
+            <li>Для анализа трат и рекомендаций</li>
+            <li>Для улучшения качества сканирования чеков</li>
+          </ul>
+          <p>Ваши данные хранятся в зашифрованном виде на серверах Supabase. Вы можете в любое время удалить все данные через настройки.</p>
+        </div>
+      </Modal>
+
+      {/* Help & FAQ Modal */}
+      <Modal isOpen={showHelpModal} onClose={() => setShowHelpModal(false)} title={t('settings.helpAndFAQ')}>
+        <div className="space-y-4 text-sm">
+          <div className="border-b pb-3">
+            <p className="font-medium mb-1">Как сканировать чек?</p>
+            <p className="text-muted-foreground">Нажмите кнопку камеры на экране сканирования. Вы можете сделать фото или загрузить из галереи.</p>
+          </div>
+          <div className="border-b pb-3">
+            <p className="font-medium mb-1">Как изменить валюту?</p>
+            <p className="text-muted-foreground">Перейдите в Настройки → Валюта и выберите нужную.</p>
+          </div>
+          <div className="border-b pb-3">
+            <p className="font-medium mb-1">Как работает бюджет?</p>
+            <p className="text-muted-foreground">Установите лимиты на категории в разделе Бюджет. Приложение будет следить за расходами.</p>
+          </div>
+          <div className="pb-3">
+            <p className="font-medium mb-1">Что такое Premium?</p>
+            <p className="text-muted-foreground">Премиум открывает безлимитное сканирование, AI-консультанта и экспорт данных.</p>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Rate App Modal */}
+      <Modal isOpen={showRateModal} onClose={() => setShowRateModal(false)} title={t('settings.rateApp')}>
+        <div className="space-y-4 text-center">
+          <p className="text-muted-foreground">Насколько вы довольны приложением Wally?</p>
+          <div className="flex justify-center gap-2">
+            {[1, 2, 3, 4, 5].map(star => (
+              <button key={star} className="text-4xl hover:scale-110 transition-transform">⭐</button>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground">Спасибо за ваш отзыв!</p>
+        </div>
+      </Modal>
     </div>
   );
 }

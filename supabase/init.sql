@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS public.expenses (
   description TEXT,
   category_id TEXT,  -- Убран FK constraint для надёжности, валидация на уровне приложения
   date DATE DEFAULT CURRENT_DATE,
+  receipt_date DATE,  -- дата с чека (когда была покупка)
   receipt_url TEXT,           -- ссылка на фото чека в Supabase Storage
   ai_categorized BOOLEAN DEFAULT false,  -- был ли расход классифицирован AI
   created_at TIMESTAMPTZ DEFAULT NOW()
@@ -182,29 +183,26 @@ CREATE TRIGGER on_auth_user_created
 -- STORAGE: бакет для фото чеков
 -- ================================================
 INSERT INTO storage.buckets (id, name, public)
-VALUES ('receipts', 'receipts', false)
+VALUES ('receipts', 'receipts', true)
 ON CONFLICT (id) DO NOTHING;
 
--- Политики доступа к Storage
+-- Политики доступа к Storage (упрощённые - достаточно быть авторизованным)
 CREATE POLICY "Users can upload receipts"
   ON storage.objects FOR INSERT
   WITH CHECK (
-    bucket_id = 'receipts' AND
-    auth.uid()::text = (storage.foldername(name))[1]
+    bucket_id = 'receipts' AND auth.uid() IS NOT NULL
   );
 
-CREATE POLICY "Users can view own receipts"
+CREATE POLICY "Users can view receipts"
   ON storage.objects FOR SELECT
   USING (
-    bucket_id = 'receipts' AND
-    auth.uid()::text = (storage.foldername(name))[1]
+    bucket_id = 'receipts' AND auth.uid() IS NOT NULL
   );
 
-CREATE POLICY "Users can delete own receipts"
+CREATE POLICY "Users can delete receipts"
   ON storage.objects FOR DELETE
   USING (
-    bucket_id = 'receipts' AND
-    auth.uid()::text = (storage.foldername(name))[1]
+    bucket_id = 'receipts' AND auth.uid() IS NOT NULL
   );
 
 -- ================================================
@@ -222,3 +220,15 @@ CREATE TRIGGER profiles_updated_at
   BEFORE UPDATE ON public.profiles
   FOR EACH ROW
   EXECUTE FUNCTION public.update_updated_at();
+
+-- ================================================
+-- MIGRATION: Add receipt_date column (выполните этот запрос отдельно если таблица уже существует)
+-- ================================================
+-- ALTER TABLE public.expenses ADD COLUMN receipt_date DATE;
+-- COMMENT ON COLUMN public.expenses.receipt_date IS 'Дата с чека (когда была покупка)';
+
+-- ================================================
+-- MIGRATION: Add currency column to profiles
+-- ================================================
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS currency TEXT DEFAULT 'KZT';
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS plan TEXT DEFAULT 'free' CHECK (plan IN ('free', 'premium'));

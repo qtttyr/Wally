@@ -2,60 +2,83 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
     <!-- Primary Meta Tags -->
     <title>Wally — AI Финансовый Помощник</title>
     <meta name="title" content="Wally — AI Финансовый Помощник" />
-    <meta name="description" content="Сканируй чеки, контролируй бюджет, получай AI-инсайты о своих тратах" />
-    <meta name="keywords" content="финансы, расходы, бюджет, чеки, сканер, AI, ИИ, помощник" />
+    <meta
+      name="description"
+      content="Сканируй чеки, контролируй бюджет, получай AI-инсайты о своих тратах"
+    />
+    <meta
+      name="keywords"
+      content="финансы, расходы, бюджет, чеки, сканер, AI, ИИ, помощник"
+    />
     <meta name="author" content="Wally" />
     <meta name="theme-color" content="#0d9488" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
     <meta name="apple-mobile-web-app-title" content="Wally" />
     <meta name="mobile-web-app-capable" content="yes" />
-    
+
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/icon-512.png" />
-    
+    <link rel="icon" type="image/jpeg" href="/icon.jpg" />
+    <link rel="apple-touch-icon" href="/icon.jpg" />
+
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
-    
+
     <!-- Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
+
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Wally — AI Финансовый Помощник" />
-    <meta property="og:description" content="Сканируй чеки, контролируй бюджет, получай AI-инсайты о своих тратах" />
-    <meta property="og:image" content="/wally-logo.svg" />
+    <meta
+      property="og:description"
+      content="Сканируй чеки, контролируй бюджет, получай AI-инсайты о своих тратах"
+    />
+    <meta property="og:image" content="/icon.jpg" />
     <meta property="og:site_name" content="Wally" />
     <meta property="og:locale" content="ru_RU" />
-    
+
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Wally — AI Финансовый Помощник" />
-    <meta name="twitter:description" content="Сканируй чеки, контролируй бюджет, получай AI-инсайты о своих тратах" />
-    <meta name="twitter:image" content="/wally-logo.svg" />
-    
+    <meta
+      name="twitter:description"
+      content="Сканируй чеки, контролируй бюджет, получай AI-инсайты о своих тратах"
+    />
+    <meta name="twitter:image" content="/icon.jpg" />
+
     <!-- Format detection -->
     <meta name="format-detection" content="telephone=no" />
-    
+
     <!-- Styles -->
     <style>
       body {
         margin: 0;
         padding: 0;
-        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
         background-color: #0f172a;
         color: #f8fafc;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
       }
-      
+
       #splash {
         position: fixed;
         top: 0;
@@ -70,18 +93,18 @@
         z-index: 9999;
         transition: opacity 0.3s ease-out;
       }
-      
+
       #splash.fade-out {
         opacity: 0;
         pointer-events: none;
       }
-      
+
       #splash img {
         width: 120px;
         height: 120px;
         animation: pulse 2s ease-in-out infinite;
       }
-      
+
       #splash h1 {
         color: #14b8a6;
         font-size: 24px;
@@ -89,38 +112,45 @@
         margin-top: 16px;
         letter-spacing: -0.5px;
       }
-      
+
       #splash p {
         color: #94a3b8;
         font-size: 14px;
         margin-top: 8px;
       }
-      
+
       @keyframes pulse {
-        0%, 100% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.05); opacity: 0.8; }
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.05);
+          opacity: 0.8;
+        }
       }
     </style>
   </head>
   <body>
     <!-- Splash screen -->
     <div id="splash">
-      <img src="/wally-logo.svg" alt="Wally" />
+      <img src="/icon.jpg" alt="Wally" />
       <h1>Wally</h1>
       <p>Загрузка...</p>
     </div>
-    
+
     <div id="root"></div>
-    
+
     <script type="module" src="/src/main.tsx"></script>
-    
+
     <script>
       // Remove splash screen when app loads
-      window.addEventListener('load', () => {
-        const splash = document.getElementById('splash');
+      window.addEventListener("load", () => {
+        const splash = document.getElementById("splash");
         if (splash) {
           setTimeout(() => {
-            splash.classList.add('fade-out');
+            splash.classList.add("fade-out");
             setTimeout(() => splash.remove(), 300);
           }, 800);
         }

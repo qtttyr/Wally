@@ -10,7 +10,7 @@ import { WalletIcon, EyeIcon, EyeOffIcon, MailIcon, LockIcon, UserIcon, CheckCir
 export default function RegisterPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { signUpWithEmail, signInWithGoogle, authError, clearError, isLoading } = useAuth();
+  const { signUpWithEmail, signInWithGoogle, isLoading } = useAuth();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -18,6 +18,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const passwordStrength = (() => {
     if (password.length === 0) return { level: 0, text: '', color: '' };
@@ -31,10 +32,15 @@ export default function RegisterPage() {
     e.preventDefault();
     if (!email || !password || !name) return;
     setIsSubmitting(true);
-    const success = await signUpWithEmail(email, password, name);
+    setError(null);
+    
+    const result = await signUpWithEmail(email, password, name);
     setIsSubmitting(false);
-    if (success) {
+    
+    if (result.success) {
       setIsSuccess(true);
+    } else {
+      setError(result.error || 'Error');
     }
   };
 
@@ -83,9 +89,9 @@ export default function RegisterPage() {
         </div>
 
         {/* Error Message */}
-        {authError && (
+        {error && (
           <div className="w-full rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-center text-sm text-destructive animate-in fade-in slide-in-from-top-2">
-            {authError}
+            {error}
           </div>
         )}
 
@@ -97,7 +103,7 @@ export default function RegisterPage() {
               type="text"
               placeholder={t('auth.enterName')}
               value={name}
-              onChange={(e) => { setName(e.target.value); clearError(); }}
+              onChange={(e) => { setName(e.target.value); setError(null); }}
               className="h-13 rounded-2xl pl-11 text-base"
               required
               autoComplete="name"
@@ -110,7 +116,7 @@ export default function RegisterPage() {
               type="email"
               placeholder={t('auth.enterEmail')}
               value={email}
-              onChange={(e) => { setEmail(e.target.value); clearError(); }}
+              onChange={(e) => { setEmail(e.target.value); setError(null); }}
               className="h-13 rounded-2xl pl-11 text-base"
               required
               autoComplete="email"
@@ -123,7 +129,7 @@ export default function RegisterPage() {
               type={showPassword ? 'text' : 'password'}
               placeholder={t('auth.passwordMinLength')}
               value={password}
-              onChange={(e) => { setPassword(e.target.value); clearError(); }}
+              onChange={(e) => { setPassword(e.target.value); setError(null); }}
               className="h-13 rounded-2xl pl-11 pr-11 text-base"
               required
               autoComplete="new-password"

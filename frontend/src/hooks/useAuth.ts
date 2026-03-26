@@ -1,74 +1,117 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuthStore } from '../store/authStore'
+import type { User } from '../types/user'
+
+interface ProfileData {
+  id: string;
+  email: string;
+  name: string | null;
+  avatar_url: string | null;
+  plan: string;
+  currency: string;
+}
 
 export const useAuth = () => {
   const { user, session, isLoading, setUser, setSession, setLoading } = useAuthStore()
-  const [authError, setAuthError] = useState<string | null>(null)
+  const initialized = useRef(false)
+  const loadingRef = useRef(false)
 
-  const mapUser = (supabaseUser: { id: string; email?: string; user_metadata: Record<string, string>; created_at: string }) => ({
+  const mapUser = (supabaseUser: { id: string; email?: string; user_metadata: Record<string, string>; created_at: string }, profile?: ProfileData): User => ({
     id: supabaseUser.id,
     email: supabaseUser.email || '',
-    name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'Пользователь',
-    avatar_url: supabaseUser.user_metadata?.avatar_url,
-    plan: 'free' as const,
+    name: profile?.name || supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'Пользователь',
+    avatar_url: profile?.avatar_url || supabaseUser.user_metadata?.avatar_url,
+    plan: (profile?.plan as User['plan']) || 'free',
+    currency: profile?.currency || 'KZT',
     created_at: supabaseUser.created_at,
   })
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      if (session?.user) {
-        setUser(mapUser(session.user))
-      }
-      setLoading(false)
-    })
+  const fetchProfile = async (userId: string): Promise<ProfileData | null> => {
+    try {
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single()
+      return data as ProfileData | null
+    } catch {
+      return null
+    }
+  }
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-      if (session?.user) {
-        setUser(mapUser(session.user))
+  const loadUser = async () => {
+    if (loadingRef.current || initialized.current) return
+    loadingRef.current = true
+
+    try {
+      const { data: { session: currentSession } } = await supabase.auth.getSession()
+      
+      if (currentSession?.user) {
+        const profile = await fetchProfile(currentSession.user.id)
+        setUser(mapUser(currentSession.user, profile || undefined))
+        setSession(currentSession)
       } else {
         setUser(null)
+        setSession(null)
       }
+    } catch (e) {
+      console.warn('Auth load error:', e)
+      setUser(null)
+      setSession(null)
+    } finally {
       setLoading(false)
+      initialized.current = true
+      loadingRef.current = false
+    }
+  }
+
+  useEffect(() => {
+    loadUser()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+      if (initialized.current && !loadingRef.current) {
+        if (newSession?.user) {
+          const profile = await fetchProfile(newSession.user.id)
+          setUser(mapUser(newSession.user, profile || undefined))
+          setSession(newSession)
+        } else {
+          setUser(null)
+          setSession(null)
+        }
+      }
     })
 
     return () => {
       subscription.unsubscribe()
     }
-  }, [setUser, setSession, setLoading])
+  }, [])
 
   const signInWithGoogle = async () => {
-    setAuthError(null)
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: window.location.origin,
       },
     })
-    if (error) setAuthError(error.message)
+    if (error) console.error('Google sign in error:', error)
   }
 
   const signInWithEmail = async (email: string, password: string) => {
-    setAuthError(null)
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
     if (error) {
       if (error.message === 'Invalid login credentials') {
-        setAuthError('Неверный email или пароль')
-      } else {
-        setAuthError(error.message)
+        return { success: false, error: 'Неверный email или пароль' }
       }
-      return false
+      return { success: false, error: error.message }
     }
-    return true
+    return { success: true }
   }
 
   const signUpWithEmail = async (email: string, password: string, name: string) => {
-    setAuthError(null)
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -78,31 +121,54 @@ export const useAuth = () => {
     })
     if (error) {
       if (error.message.includes('already registered')) {
-        setAuthError('Этот email уже зарегистрирован')
-      } else {
-        setAuthError(error.message)
+        return { success: false, error: 'Этот email уже зарегистрирован' }
       }
-      return false
+      return { success: false, error: error.message }
     }
-    return true
+    return { success: true }
   }
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    if (error) setAuthError(error.message)
+    initialized.current = false
+    loadingRef.current = false
+    await supabase.auth.signOut()
+    setUser(null)
+    setSession(null)
   }
 
-  const clearError = () => setAuthError(null)
+  const updateProfile = async (updates: Partial<ProfileData>) => {
+    if (!session?.user) return false
+    
+    const { error } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', session.user.id)
+    
+    if (error) {
+      console.error('Update profile error:', error)
+      return false
+    }
+    
+    setUser({
+      ...user!,
+      ...updates,
+      name: updates.name ?? user?.name,
+      avatar_url: updates.avatar_url ?? user?.avatar_url,
+      currency: updates.currency ?? user?.currency,
+    } as User)
+    
+    return true
+  }
 
   return {
     user,
     session,
     isLoading,
-    authError,
+    authError: null,
     signInWithGoogle,
     signInWithEmail,
     signUpWithEmail,
     signOut,
-    clearError,
+    updateProfile,
   }
 }

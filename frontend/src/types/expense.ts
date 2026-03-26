@@ -4,6 +4,7 @@ export interface Expense {
   amount: number;
   category_id: string;
   date: string;
+  receipt_date?: string;
   description?: string;
   receipt_url?: string;
   ai_categorized?: boolean;
@@ -14,6 +15,7 @@ export interface ExpenseCreate {
   amount: number;
   category_id: string;
   date: string;
+  receipt_date?: string;
   description?: string;
   receipt_url?: string;
 }

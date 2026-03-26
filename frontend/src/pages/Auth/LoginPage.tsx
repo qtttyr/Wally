@@ -10,20 +10,28 @@ import { WalletIcon, EyeIcon, EyeOffIcon, MailIcon, LockIcon } from 'lucide-reac
 export default function LoginPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { signInWithGoogle, signInWithEmail, authError, clearError, isLoading } = useAuth();
+  const { signInWithGoogle, signInWithEmail, isLoading } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) return;
     setIsSubmitting(true);
-    const success = await signInWithEmail(email, password);
+    setError(null);
+    
+    const result = await signInWithEmail(email, password);
     setIsSubmitting(false);
-    if (success) navigate(ROUTES.DASHBOARD);
+    
+    if (result.success) {
+      navigate(ROUTES.DASHBOARD);
+    } else {
+      setError(result.error || 'Error');
+    }
   };
 
   return (
@@ -46,9 +54,9 @@ export default function LoginPage() {
         </div>
 
         {/* Error Message */}
-        {authError && (
+        {error && (
           <div className="w-full rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-center text-sm text-destructive animate-in fade-in slide-in-from-top-2">
-            {authError}
+            {error}
           </div>
         )}
 
@@ -60,7 +68,7 @@ export default function LoginPage() {
               type="email"
               placeholder={t('auth.enterEmail')}
               value={email}
-              onChange={(e) => { setEmail(e.target.value); clearError(); }}
+              onChange={(e) => { setEmail(e.target.value); setError(null); }}
               className="h-13 rounded-2xl pl-11 text-base"
               required
               autoComplete="email"
@@ -73,7 +81,7 @@ export default function LoginPage() {
               type={showPassword ? 'text' : 'password'}
               placeholder={t('auth.enterPassword')}
               value={password}
-              onChange={(e) => { setPassword(e.target.value); clearError(); }}
+              onChange={(e) => { setPassword(e.target.value); setError(null); }}
               className="h-13 rounded-2xl pl-11 pr-11 text-base"
               required
               autoComplete="current-password"

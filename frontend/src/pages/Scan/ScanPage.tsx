@@ -147,7 +147,7 @@ export default function ScanPage() {
       let receiptUrl = null;
 
       if (processedBlob) {
-        const fileName = `receipts/${session.user.id}/${Date.now()}.jpg`;
+        const fileName = `${session.user.id}/${Date.now()}.jpg`;
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('receipts')
           .upload(fileName, processedBlob, {
@@ -160,28 +160,38 @@ export default function ScanPage() {
             .from('receipts')
             .getPublicUrl(fileName);
           receiptUrl = publicUrl;
+        } else if (uploadError) {
+          console.error('Storage upload error:', uploadError);
         }
       }
 
+      const scanDate = new Date().toISOString().split('T')[0];
+      
       const insertData = {
         user_id: session.user.id,
         amount: editedResult.amount,
         category_id: editedResult.category_id || 'other',
-        date: editedResult.date || new Date().toISOString().split('T')[0],
+        date: scanDate,  // дата сканирования - для бюджета и аналитики
+        receipt_date: editedResult.date || scanDate,  // дата с чека
         description: editedResult.description || t('scan.scanReceipt'),
         ai_categorized: true,
         receipt_url: receiptUrl
       };
 
-      const { error } = await supabase
+      console.log('Inserting expense with data:', insertData);
+
+      const { data, error } = await supabase
         .from('expenses')
         .insert(insertData)
         .select()
         .single();
 
       if (error) {
+        console.error('Expense insert error:', error);
         throw new Error(error.message);
       }
+
+      console.log('Expense created successfully:', data);
 
       await fetchExpenses();
       setProcessedBlob(null);
@@ -195,7 +205,7 @@ export default function ScanPage() {
   };
 
   const confidenceLevel = scanResult?.confidence ? getConfidenceLevel(scanResult.confidence) : null;
-  const isEditable = confidenceLevel === 'medium' || confidenceLevel === 'low';
+  const isEditable = true; // Always allow editing
 
   const renderCapture = () => (
     <div className="flex flex-col items-center justify-center space-y-6">
