@@ -19,7 +19,11 @@ class Settings(BaseSettings):
     AI_MODEL: str = "gemini-2.5-flash"
 
     # Security
-    BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://localhost:3000"]
+    BACKEND_CORS_ORIGINS: List[str] = [
+        "http://localhost:5173", 
+        "http://localhost:3000",
+        "https://wallyai.vercel.app",
+    ]
 
     class Config:
         env_file = ".env"

@@ -1,0 +1,20 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/wally-backend-491406/wally-api', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/wally-backend-491406/wally-api']
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args:
+  - 'run'
+  - 'deploy'
+  - 'wally-api'
+  - '--image'
+  - 'gcr.io/wally-backend-491406/wally-api'
+  - '--platform'
+  - 'managed'
+  - '--region'
+  - 'us-central1'
+  - '--allow-unauthenticated'
+images:
+- 'gcr.io/wally-backend-491406/wally-api'
