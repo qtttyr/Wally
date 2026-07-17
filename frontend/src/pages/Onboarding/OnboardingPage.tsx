@@ -1,25 +1,10 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
-import {
-  ArrowRight,
-  Scan,
-  BarChart3,
-  Sparkles,
-  Check,
-  Wallet,
-  Coffee,
-  Car,
-  ShoppingBag,
-  Home,
-  Gamepad2,
-  Smartphone,
-  Heart,
-} from "lucide-react"
+import { ArrowRight, Check, Wallet } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { supabase } from "@/lib/supabase"
 import { useAuth } from "@/hooks/useAuth"
 import { ROUTES } from "@/constants/routes"
 
