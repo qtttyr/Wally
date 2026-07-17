@@ -6,6 +6,7 @@ import { AppLayout } from './components/layout/AppLayout';
 // Pages
 import LoginPage from './pages/Auth/LoginPage';
 import RegisterPage from './pages/Auth/RegisterPage';
+import OnboardingPage from './pages/Onboarding/OnboardingPage';
 import DashboardPage from './pages/Dashboard/DashboardPage';
 import ScanPage from './pages/Scan/ScanPage';
 import ReceiptsPage from './pages/Receipts/ReceiptsPage';
@@ -25,6 +26,8 @@ function App() {
 
         {/* Protected Routes */}
         <Route element={<PrivateRoute />}>
+          {/* Onboarding — full screen, no bottom nav */}
+          <Route path={ROUTES.ONBOARDING} element={<OnboardingPage />} />
           <Route element={<AppLayout />}>
             <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
             <Route path={ROUTES.EXPENSES} element={<ExpensesPage />} />

@@ -10,6 +10,7 @@ interface ProfileData {
   avatar_url: string | null;
   plan: string;
   currency: string;
+  monthly_budget: number | null;
 }
 
 export const useAuth = () => {
@@ -24,6 +25,7 @@ export const useAuth = () => {
     avatar_url: profile?.avatar_url || supabaseUser.user_metadata?.avatar_url,
     plan: (profile?.plan as User['plan']) || 'free',
     currency: profile?.currency || 'KZT',
+    monthly_budget: profile?.monthly_budget ?? undefined,
     created_at: supabaseUser.created_at,
   })
 

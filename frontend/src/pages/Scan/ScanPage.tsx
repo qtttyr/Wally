@@ -89,42 +89,51 @@ export default function ScanPage() {
       const formData = new FormData();
       formData.append('file', processedFileObj);
 
-      const response = await fetch(API_ENDPOINTS.SCAN_PROCESS, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`
-        },
-        body: formData
-      });
+      // Add timeout — prevents infinite loading if backend hangs
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30000);
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || `Server error: ${response.status}`);
+      try {
+        const response = await fetch(API_ENDPOINTS.SCAN_PROCESS, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`
+          },
+          body: formData,
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.detail || `Server error: ${response.status}`);
+        }
+
+        const result = await response.json();
+        
+        setScanResult({
+          success: true,
+          description: result.description,
+          amount: result.amount,
+          currency: result.currency,
+          date: result.date,
+          category_id: result.category_id,
+          confidence: result.confidence,
+          items: result.items || []
+        });
+        setEditedResult({
+          success: true,
+          description: result.description,
+          amount: result.amount,
+          currency: result.currency,
+          date: result.date,
+          category_id: result.category_id,
+          confidence: result.confidence,
+          items: result.items || []
+        });
+        setStep('result');
+      } finally {
+        clearTimeout(timeout);
       }
-
-      const result = await response.json();
-      
-      setScanResult({
-        success: true,
-        description: result.description,
-        amount: result.amount,
-        currency: result.currency,
-        date: result.date,
-        category_id: result.category_id,
-        confidence: result.confidence,
-        items: result.items || []
-      });
-      setEditedResult({
-        success: true,
-        description: result.description,
-        amount: result.amount,
-        currency: result.currency,
-        date: result.date,
-        category_id: result.category_id,
-        confidence: result.confidence,
-        items: result.items || []
-      });
-      setStep('result');
       
     } catch (err: unknown) {
       console.error("Scan error:", err);

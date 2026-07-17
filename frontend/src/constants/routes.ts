@@ -1,6 +1,7 @@
 export const ROUTES = {
   AUTH: "/auth",
   AUTH_REGISTER: "/auth/register",
+  ONBOARDING: "/onboarding",
   DASHBOARD: "/",
   EXPENSES: "/expenses",
   SCAN: "/scan",

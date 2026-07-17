@@ -19,7 +19,7 @@ export default function DashboardPage() {
   const { expenses, isLoading } = useExpenses();
 
   const totalSpent = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-  const monthlyBudget = 200000;
+  const monthlyBudget = user?.monthly_budget || 200000;
   const remaining = monthlyBudget - totalSpent;
 
   const firstName = user?.name?.split(' ')[0] || t('dashboard.hello');

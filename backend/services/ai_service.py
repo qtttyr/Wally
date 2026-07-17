@@ -1,6 +1,7 @@
 import json
 import re
 import logging
+import asyncio
 import base64
 from datetime import date
 from typing import Optional
@@ -90,13 +91,17 @@ class AIService:
 
             image_part = types.Part.from_bytes(data=image_bytes, mime_type=mime_type)
 
-            response = self.client.models.generate_content(
-                model=self.model,
-                contents=[image_part, VISION_PROMPT],
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    response_schema=RESPONSE_SCHEMA,
+            response = await asyncio.wait_for(
+                asyncio.to_thread(
+                    self.client.models.generate_content,
+                    model=self.model,
+                    contents=[image_part, VISION_PROMPT],
+                    config=types.GenerateContentConfig(
+                        response_mime_type="application/json",
+                        response_schema=RESPONSE_SCHEMA,
+                    ),
                 ),
+                timeout=30.0,
             )
 
             content = response.text.strip()
@@ -110,6 +115,9 @@ class AIService:
 
             return ReceiptParseResult.model_validate(data)
 
+        except asyncio.TimeoutError:
+            logger.error("Gemini Vision timed out after 30s")
+            return self._fallback_result()
         except (json.JSONDecodeError, ValidationError) as e:
             logger.warning(f"Vision parse validation error: {e}")
             return self._fallback_result()
@@ -143,13 +151,17 @@ Receipt text:
 {raw_text}
 """
         try:
-            response = self.client.models.generate_content(
-                model=self.model,
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    response_schema=RESPONSE_SCHEMA
+            response = await asyncio.wait_for(
+                asyncio.to_thread(
+                    self.client.models.generate_content,
+                    model=self.model,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        response_mime_type="application/json",
+                        response_schema=RESPONSE_SCHEMA
+                    ),
                 ),
+                timeout=30.0,
             )
             content = response.text.strip()
             data = json.loads(content)
